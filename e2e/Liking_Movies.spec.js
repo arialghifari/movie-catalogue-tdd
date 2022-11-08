@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 /* eslint-disable no-undef */
 Feature('Liking Movies');
 
@@ -10,8 +12,23 @@ Scenario('showing empty liked movies', ({ I }) => {
   I.see('Tidak ada film untuk ditampilkan', '.movie-item__not__found');
 });
 
-Scenario('liking one movie', ({ I }) => {
+Scenario('liking one movie', async ({ I }) => {
   I.see('Tidak ada film untuk ditampilkan', '.movie-item__not__found');
   I.amOnPage('/');
-  // next test
+
+  I.waitForElement('.movie__title a');
+
+  const firstFilm = locate('.movie__title a').first();
+  const firstFilmTitle = await I.grabTextFrom(firstFilm);
+  I.click(firstFilm);
+
+  I.seeElement('#likeButton');
+  I.click('#likeButton');
+
+  I.amOnPage('/#/like');
+  I.seeElement('.movie-item');
+
+  const likedFilmTitle = await I.grabTextFrom('.movie__title');
+
+  assert.strictEqual(firstFilmTitle, likedFilmTitle);
 });
